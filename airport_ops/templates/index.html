@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>机场运营数据管理系统</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <script defer src="{{ url_for('static', filename='app.js') }}"></script>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="brand"><div class="brand-mark">AO</div><div><strong>机场运营</strong><span>数据管理平台</span></div></div>
+      <div class="side-label">运营中心</div>
+      <a class="nav-item active" href="#overview"><span>▦</span>运行总览</a>
+      <a class="nav-item" href="#flight-list"><span>✈</span>航班管理</a>
+      <a class="nav-item" href="#gate-board"><span>▤</span>登机口资源</a>
+      <div class="sidebar-foot"><span class="live-dot"></span>本地演示环境</div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><div><p class="eyebrow">AIRPORT OPERATIONS</p><h1>机场运行总览</h1></div><div class="topbar-right"><span class="today" id="today-label"></span><span class="avatar">A</span></div></header>
+      <section id="overview">
+        <div class="welcome-row"><div><h2>运行态势</h2><p>集中查看航班计划、延误情况与登机口资源状态。</p></div><button class="primary-button" id="new-flight-button">＋ 新增航班</button></div>
+        <div class="metric-grid" id="metrics">
+          <article class="metric-card"><span class="metric-icon blue">✈</span><div><small>今日航班</small><strong id="metric-flights">—</strong><em>计划起降</em></div></article>
+          <article class="metric-card"><span class="metric-icon orange">◷</span><div><small>延误航班</small><strong id="metric-delayed">—</strong><em>需要关注</em></div></article>
+          <article class="metric-card"><span class="metric-icon teal">◉</span><div><small>运行中航班</small><strong id="metric-active">—</strong><em>计划或登机中</em></div></article>
+          <article class="metric-card"><span class="metric-icon purple">▣</span><div><small>登机口占用</small><strong id="metric-gates">—</strong><em id="metric-gates-note">当前占用 / 可用总数</em></div></article>
+        </div>
+      </section>
+      <section class="panel" id="flight-entry">
+        <div class="panel-heading"><div><h2>航班信息录入</h2><p>录入计划航班后，可分配登机口并登记延误。</p></div><button class="text-button" id="toggle-form">收起 −</button></div>
+        <form id="flight-form" class="flight-form">
+          <label>航班号<input name="flight_no" placeholder="例如 CA1234" maxlength="12" required></label>
+          <label>航空公司<select name="airline_id" id="airline-select" required></select></label>
+          <label>机型<select name="aircraft_type_id" id="aircraft-select" required></select></label>
+          <label>航班方向<select name="direction"><option value="DEPARTURE">出发</option><option value="ARRIVAL">到达</option></select></label>
+          <label>目的地 / 始发地<input name="origin_destination" placeholder="例如 上海虹桥" required></label>
+          <label>计划时间<input name="scheduled_time" type="datetime-local" required></label>
+          <div class="form-actions"><span class="form-hint">时间按本地时区录入；登机口按机型周转时间检查冲突。</span><button class="primary-button" type="submit">保存航班</button></div>
+        </form>
+      </section>
+      <section class="panel" id="flight-list">
+        <div class="panel-heading"><div><h2>航班计划</h2><p id="flight-count">正在加载航班…</p></div><button class="quiet-button" id="refresh-button">↻ 刷新</button></div>
+        <form id="filter-form" class="filters">
+          <div class="search-box"><span>⌕</span><input name="q" placeholder="搜索航班号、航空公司、航线或登机口"></div>
+          <select name="direction"><option value="">全部方向</option><option value="DEPARTURE">出发</option><option value="ARRIVAL">到达</option></select>
+          <select name="status"><option value="">全部状态</option><option value="SCHEDULED">计划中</option><option value="DELAYED">延误</option><option value="BOARDING">登机中</option><option value="DEPARTED">已起飞</option><option value="ARRIVED">已到达</option><option value="CANCELLED">已取消</option></select>
+          <input type="date" name="date" aria-label="按日期筛选">
+          <button class="quiet-button" type="submit">筛选</button>
+        </form>
+        <div class="table-wrap"><table><thead><tr><th>航班</th><th>方向 / 航线</th><th>计划时间</th><th>登机口</th><th>延误</th><th>状态</th><th>操作</th></tr></thead><tbody id="flight-rows"><tr><td colspan="7" class="empty-state">正在读取航班数据…</td></tr></tbody></table></div>
+      </section>
+      <section class="panel" id="gate-board">
+        <div class="panel-heading"><div><h2>登机口资源</h2><p>登机口占用状态根据航班计划与机型周转时间计算。</p></div></div>
+        <div class="gate-grid" id="gate-grid"></div>
+      </section>
+      <footer>机场运营数据管理系统 <span>·</span> Flask 三层架构演示</footer>
+    </main>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+</body>
+</html>
+
